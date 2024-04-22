@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>chat </title>
+</head>
+
+<body>
+    <section id="chat">
+        <ul id="messages"></ul>
+        <form action="" id="form">
+            <input type="text" name="message" id="input" placeholder="type a text" autocomplete="off">
+            <button type="submit">enviar</button>
+        </form>
+
+    </section>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.8/dist/sweetalert2.all.min.js"></script>
+<script type="module">
+    import { io } from "https://cdn.socket.io/4.3.2/socket.io.esm.min.js"
+    const socket = io()
+
+    let user
+
+    Swal.fire({
+        title: 'identifícate',
+        input: 'text',
+        text: "nombre de usurio",
+        inputValidator: (value) => {
+            return !value && 'ingresa nombre de usuario para continuar'
+        },
+        allowOutsideClick: false
+    })
+        .then(result => {
+            user = result.value
+            console.log(user)
+        })
+
+
+
+    const form = document.getElementById('form')
+    const input = document.getElementById('input')
+    const msgcontainer = document.getElementById('messages')
+
+    form.addEventListener('submit', (e) => {
+        e.preventDefault()
+        if (input.value) {
+            socket.emit('chat message', { message: input.value, usuario: user })
+            input.value = '' //borramos el input
+        }
+    })
+
+    socket.on('chat message', (data) => {
+        let messages = ''
+        data.forEach(message => {
+            messages += `<li>${message.usuario} dice :${message.message}</li><br>`
+        });
+        msgcontainer.innerHTML = messages
+    })
+
+</script>
+
+</html>
