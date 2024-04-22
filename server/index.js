@@ -5,8 +5,10 @@ const { createServer } = require("node:http");
 
 const port = process.env.PORT || 3000;
 const app = express();
-const server = createServer(app);
-const io = new Server(server);
+const httpServer = app.listen(port, () => {
+  console.log(`server running on port ${port}`);
+});
+const io = new Server(httpServer);
 
 //logger de morgan te devuelve la request y el status code
 // app.use(logger("dev"));
@@ -25,8 +27,4 @@ io.on("connection", (socket) => {
 
 app.get("/", (req, res) => {
   res.sendFile(process.cwd() + "/cliente/index.html");
-});
-
-server.listen(port, () => {
-  console.log(`server running on port ${port}`);
 });
